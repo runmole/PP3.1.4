@@ -66,7 +66,6 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
