@@ -1,11 +1,93 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html lang="en">
 <head>
-    <title>Spring Security Example</title>
+    <meta charset="UTF-8">
+    <title>Users</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        .container {
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 50%;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+
+        form {
+            display: inline-block;
+            margin: 0 20px;
+            text-align: left;
+        }
+
+        input[type="text"] {
+            width: 150px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #2947e2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-<h1>User, welcome spring boot security page!</h1>
+<h1>User information-page</h1>
 
+
+<div class="form-container">
+
+        <a href="#" class="logout-button" th:href="@{/logout}" role="button">Logout</a>
+
+<div class="container">
+    <table>
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Age</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${user != null}">
+            <td th:text="${user.id}">Id</td>
+            <td th:text="${user.firstName}">First name</td>
+            <td th:text="${user.lastName}">Last name</td>
+            <td th:text="${user.age}">Age</td>
+            <td th:text="${user.email}">Email</td>
+            <td>
+                <ul>
+                    <li th:each="role : ${user.roles}" th:text="${role.role}">Role</li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
 </body>
 </html>

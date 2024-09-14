@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        .container {
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 50%;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+
+        form {
+            display: inline-block;
+            margin: 0 20px;
+            text-align: left;
+        }
+
+        input[type="text"] {
+            width: 150px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #2947e2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+    </style>
+</head>
+<body>
+<h1>Users List</h1>
+
+<!-- Формы для добавления, удаления и обновления пользователя -->
+<div class="form-container">
+
+    <a href="#" class="logout-button" th:href="@{/logout}" role="button">Logout</a>
+
+    <!-- Форма для добавления пользователя -->
+    <form method="post" action="/admin/addUser">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        <h2>Add User</h2>
+        <label for="firstName_add">First Name</label><br>
+        <input name="firstName" type="text" id="firstName_add"><br>
+
+        <label for="lastName_add">Last Name</label><br>
+        <input name="lastName" type="text" id="lastName_add"><br>
+
+        <label for="age_add">Age</label><br>
+        <input name="age" type="text" id="age_add"><br>
+
+        <label for="email_add">Email</label><br>
+        <input name="email" type="text" id="email_add"><br>
+
+        <label for="password_add">Password</label><br>
+        <input name="password" type="password" id="password_add"><br>
+
+        <select name="role" id="role">
+            <option value="ADMIN">Admin</option>
+            <option value="USER">User</option>
+        </select>
+
+        <input type="submit" value="Save">
+    </form>
+
+    <!-- Форма для удаления пользователя -->
+    <form method="post" action="/admin/deleteUser">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        <h2>Delete User</h2>
+        <label for="id_delete">User ID</label><br>
+        <input name="id" type="text" id="id_delete"><br>
+        <input type="submit" value="Delete User">
+    </form>
+
+<!--     Форма для обновления пользователя -->
+    <form method="post" action="/admin/updateUser">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        <h2>Update User</h2>
+        <label for="id_update">User ID</label><br>
+        <input name="id" type="text" id="id_update"><br>
+
+        <label for="firstName_update">First Name</label><br>
+        <input name="firstName" type="text" id="firstName_update"><br>
+
+        <label for="lastName_update">Last Name</label><br>
+        <input name="lastName" type="text" id="lastName_update"><br>
+
+        <label for="age_update">Age</label><br>
+        <input name="age" type="text" id="age_update"><br>
+
+        <label for="email_update">Email</label><br>
+        <input name="email" type="text" id="email_update"><br>
+
+        <label for="password_update">Password</label><br>
+        <input name="password" type="password" id="password_update"><br>
+
+        <select name="role" id="role_update">
+        <option value="ADMIN">Admin</option>
+        <option value="USER">User</option>
+        </select>
+
+        <input type="submit" value="Update User">
+    </form>
+
+
+</div>
+
+<!-- Таблица с пользователями -->
+<div class="container">
+    <table>
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Age</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}">Id</td>
+            <td th:text="${user.firstName}">First name</td>
+            <td th:text="${user.lastName}">Last name</td>
+            <td th:text="${user.age}">Age</td>
+            <td th:text="${user.email}">Email</td>
+
+            <td>
+                <ul>
+                    <li th:each="role : ${user.roles}" th:text="${role.role}">Role</li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
