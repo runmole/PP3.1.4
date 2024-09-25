@@ -7,18 +7,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.repositoies.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.UserService;
-import java.util.List;
+import java.util.*;
 
 
 @Controller
 public class AdminController {
     private final UserService userService;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public AdminController(UserService userService) {
+    public AdminController(UserService userService, RoleRepository roleRepository) {
         this.userService = userService;
+        this.roleRepository = roleRepository;
     }
 
     @GetMapping(value = "/admin")
@@ -29,10 +33,16 @@ public class AdminController {
     }
 
     @PostMapping("/admin/addUser")
-    public String addUser(@ModelAttribute User user, @RequestParam("role") String role) {
-        userService.addUser(user, role);
-        return "redirect:/admin";
-    }
+    public String addUser(@ModelAttribute User user, @RequestParam("roles") List<Long> roleIds) {
+            Set<Role> roles = new HashSet<>();
+            for (Long roleId : roleIds) {
+                roleRepository.findById(roleId).ifPresent(roles::add);
+            }
+            user.setRoles(roles);
+            userService.addUser(user);
+            return "redirect:/admin";
+        }
+
 
     @PostMapping("/admin/deleteUser")
     public String deleteUser(@RequestParam Long id) {
@@ -41,8 +51,13 @@ public class AdminController {
     }
 
     @PostMapping("/admin/updateUser")
-    public String updateUser(@ModelAttribute User user, @RequestParam("role") String role) {
-        userService.updateUser(user, role);
+    public String updateUser(@ModelAttribute User user, @RequestParam("roles") List<Long> roleIds) {
+        Set<Role> roles = new HashSet<>();
+        for (Long roleId : roleIds) {
+            roleRepository.findById(roleId).ifPresent(roles::add);
+        }
+        user.setRoles(roles);
+        userService.updateUser(user);
         return "redirect:/admin";
     }
 }

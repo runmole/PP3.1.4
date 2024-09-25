@@ -80,9 +80,9 @@
         <label for="password_add">Password</label><br>
         <input name="password" type="password" id="password_add"><br>
 
-        <select name="role" id="role">
-            <option value="ADMIN">Admin</option>
-            <option value="USER">User</option>
+        <select name="roles" id="roles" multiple>
+            <option value="1">Admin</option>
+            <option value="2">User</option>
         </select>
 
         <input type="submit" value="Save">
@@ -119,9 +119,10 @@
         <label for="password_update">Password</label><br>
         <input name="password" type="password" id="password_update"><br>
 
-        <select name="role" id="role_update">
-        <option value="ADMIN">Admin</option>
-        <option value="USER">User</option>
+        <select name="roles" id="role_update" multiple>
+        <option value="1">Admin</option>
+        <option value="2">User</option>
+
         </select>
 
         <input type="submit" value="Update User">
