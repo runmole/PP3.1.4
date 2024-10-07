@@ -3,14 +3,14 @@ package ru.kata.spring.boot_security.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositoies.RoleRepository;
+import ru.kata.spring.boot_security.demo.repositoies.UserRepository;
 import ru.kata.spring.boot_security.demo.service.UserService;
+
+import java.security.Principal;
 import java.util.*;
 
 
@@ -18,18 +18,21 @@ import java.util.*;
 public class AdminController {
     private final UserService userService;
     private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public AdminController(UserService userService, RoleRepository roleRepository) {
+    public AdminController(UserService userService, RoleRepository roleRepository, UserRepository userRepository) {
         this.userService = userService;
         this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping(value = "/admin")
-    public String getAllUsers(Model model) {
+    public String getAllUsers(Model model, Principal principal) {
         List<User> users = userService.getAllUsers();
+        model.addAttribute("user", userRepository.findByEmail(principal.getName()));
         model.addAttribute("users", users);
-        return "/admin";
+        return "admin";
     }
 
     @PostMapping("/admin/addUser")
@@ -42,7 +45,6 @@ public class AdminController {
             userService.addUser(user);
             return "redirect:/admin";
         }
-
 
     @PostMapping("/admin/deleteUser")
     public String deleteUser(@RequestParam Long id) {

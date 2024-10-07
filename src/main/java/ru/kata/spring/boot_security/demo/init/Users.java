@@ -35,7 +35,7 @@ public class Users {
         roleRepository.save(userRole);
 
         User admin = new User();
-        admin.setEmail("admin");
+        admin.setEmail("admin@mail.ru");
         admin.setPassword(passwordEncoder.encode("admin"));
         admin.setRoles(Set.of(adminRole, userRole));
         admin.setAge(33);
@@ -44,7 +44,7 @@ public class Users {
         userRepository.save(admin);
 
         User user = new User();
-        user.setEmail("user");
+        user.setEmail("user@mail.ru");
         user.setPassword(passwordEncoder.encode("user"));
         user.setRoles(Set.of(userRole));
         user.setAge(25);
