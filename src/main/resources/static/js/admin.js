@@ -106,7 +106,7 @@ document.getElementById('addUserForm').addEventListener('submit', function (even
         });
 });
 
-                                        // РЕДАКТИРОВАНИЕ ПОЛЬЗОВАТЕЛЯ \\
+// РЕДАКТИРОВАНИЕ ПОЛЬЗОВАТЕЛЯ \\
 
 function openEditModel(userId) {
     console.log('Открытие модального окна редактирования для пользователя ID:', userId);
@@ -178,8 +178,7 @@ document.getElementById('editUserForm').addEventListener('submit', function (eve
 });
 
 
-
-                                        // УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ \\
+// УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ \\
 
 function openDeleteModal(userId) {
 
@@ -228,7 +227,7 @@ function deleteUser(userId) {
 }
 
 
-                                            // ОТКРЫТИЕ МОДАЛЬНОГО ОКНА \\
+// ОТКРЫТИЕ МОДАЛЬНОГО ОКНА \\
 
 function openModal(modalId) {
     console.log('Opening modal:', modalId);
