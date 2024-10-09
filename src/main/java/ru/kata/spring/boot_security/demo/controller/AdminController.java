@@ -1,65 +1,52 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repositoies.RoleRepository;
-import ru.kata.spring.boot_security.demo.repositoies.UserRepository;
 import ru.kata.spring.boot_security.demo.service.UserService;
+import java.util.List;
 
-import java.security.Principal;
-import java.util.*;
-
-
-@Controller
+@RestController
+@RequestMapping("/api")
 public class AdminController {
-    private final UserService userService;
-    private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    public AdminController(UserService userService, RoleRepository roleRepository, UserRepository userRepository) {
+    public AdminController(UserService userService) {
         this.userService = userService;
-        this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
     }
 
-    @GetMapping(value = "/admin")
-    public String getAllUsers(Model model, Principal principal) {
+    @GetMapping(value="/admin")
+    public ResponseEntity<List<User>> getAllUsers(){
         List<User> users = userService.getAllUsers();
-        model.addAttribute("user", userRepository.findByEmail(principal.getName()));
-        model.addAttribute("users", users);
-        return "admin";
+        return ResponseEntity.ok(users);
     }
 
-    @PostMapping("/admin/addUser")
-    public String addUser(@ModelAttribute User user, @RequestParam("roles") List<Long> roleIds) {
-            Set<Role> roles = new HashSet<>();
-            for (Long roleId : roleIds) {
-                roleRepository.findById(roleId).ifPresent(roles::add);
-            }
-            user.setRoles(roles);
-            userService.addUser(user);
-            return "redirect:/admin";
-        }
+    @GetMapping("/admin/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 
-    @PostMapping("/admin/deleteUser")
+    @PostMapping(value ="/admin/addUser")
+    public User addUser(@RequestBody User user) {
+        userService.addUser(user);
+        return user;
+    }
+
+    @PutMapping(value = "/admin/updateUser")
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        userService.updateUser(user);
+        return ResponseEntity.ok(user);
+    }
+
+    @DeleteMapping(value = "/admin/deleteUser")
     public String deleteUser(@RequestParam Long id) {
         userService.deleteUser(id);
-        return "redirect:/admin";
-    }
-
-    @PostMapping("/admin/updateUser")
-    public String updateUser(@ModelAttribute User user, @RequestParam("roles") List<Long> roleIds) {
-        Set<Role> roles = new HashSet<>();
-        for (Long roleId : roleIds) {
-            roleRepository.findById(roleId).ifPresent(roles::add);
-        }
-        user.setRoles(roles);
-        userService.updateUser(user);
-        return "redirect:/admin";
+        return "User with id " + id + " was deleted";
     }
 }

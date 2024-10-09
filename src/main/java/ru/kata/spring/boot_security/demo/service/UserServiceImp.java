@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositoies.UserRepository;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -21,6 +22,13 @@ public class UserServiceImp implements UserService {
     @Transactional(readOnly = true)
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User getUserById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        return user.orElse(new User());
     }
 
     @Transactional
@@ -40,7 +48,6 @@ public class UserServiceImp implements UserService {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);
     }
-
 
 
 }
