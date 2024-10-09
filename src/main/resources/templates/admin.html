@@ -127,32 +127,32 @@
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="firstName">First
                                                     name</label>
-                                                <input type="text" class="form-control" id="firstNameEdit" name="firstName">
+                                                <input type="text" class="form-control" id="firstNameEdit" name="firstNameEdit">
                                             </div>
 
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="lastName">Last name</label>
-                                                <input type="text" class="form-control" id="lastNameEdit" name="lastName">
+                                                <input type="text" class="form-control" id="lastNameEdit" name="lastNameEdit">
                                             </div>
 
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="age">Age</label>
-                                                <input type="number" class="form-control" id="ageEdit" name="age">
+                                                <input type="number" class="form-control" id="ageEdit" name="ageEdit">
                                             </div>
 
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="email">Email</label>
-                                                <input type="email" class="form-control" id="emailEdit" name="email">
+                                                <input type="email" class="form-control" id="emailEdit" name="emailEdit">
                                             </div>
 
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="password">Password</label>
                                                 <input type="password" class="form-control" id="passwordEdit"
-                                                       name="password" required>
+                                                       name="passwordEdit" required>
                                             </div>
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="roles">Roles</label>
-                                                <select class="form-control form-control-sm" id="rolesEdit" name="roles"
+                                                <select class="form-control form-control-sm" id="rolesEdit" name="rolesEdit"
                                                         multiple required
                                                         style="height: 50px;">
                                                     <option value="1">ADMIN</option>
@@ -173,7 +173,7 @@
 
 <!--                                                            DELETE USER-->
 
-                        <div th:each="user : ${users}" class="modal fade" th:id="'deleteUserModal' + ${user.id}" tabindex="-1"
+                        <div class="modal fade" th:id="deleteUserModal" tabindex="-1"
                              aria-labelledby="deleteUserModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -183,38 +183,36 @@
                                                 aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form th:action="@{/admin/deleteUser}" method="post">
+                                        <form>
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="id">ID</label>
                                                 <input type="number" class="form-control" id="idDelete"
-                                                       th:value="${user.id}"
-                                                       name="id" readonly>
+                                                       name="idDelete" readonly>
                                             </div>
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="firstName">First
                                                     name</label>
                                                 <input type="text" class="form-control" id="firstNameDelete"
-                                                       th:value="${user.firstName}" name="firstName" disabled>
+                                                       name="firstNameDelete" disabled>
                                             </div>
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="lastName">Last name</label>
                                                 <input type="text" class="form-control" id="lastNameDelete"
-                                                       th:value="${user.lastName}" name="lastName" disabled>
+                                                       name="lastNameDelete" disabled>
                                             </div>
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="age">Age</label>
                                                 <input type="number" class="form-control" id="ageDelete"
-                                                       th:value="${user.age}"
-                                                       name="age" disabled>
+                                                       name="ageDelete" disabled>
                                             </div>
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="email">Email</label>
                                                 <input type="email" class="form-control" id="emailDelete"
-                                                       th:value="${user.email}" name="email" disabled>
+                                                       name="emailDelete" disabled>
                                             </div>
                                             <div class="form-group text-center">
                                                 <label class="form-label fw-bold mb-0" for="roles">Roles</label>
-                                                <select class="form-control form-control-sm" id="rolesDelete" name="roles"
+                                                <select class="form-control form-control-sm" id="rolesDelete" name="rolesDelete"
                                                         multiple disabled
                                                         style="height: 50px;">
                                                     <option value="1">ADMIN</option>
@@ -224,7 +222,7 @@
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
                                                 </button>
-                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                                <button type="submit" id="confirmDeleteButton" class="btn btn-danger">Delete</button>
                                             </div>
                                         </form>
                                     </div>
@@ -338,6 +336,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="/js/admin.js"></script>
 
 </body>

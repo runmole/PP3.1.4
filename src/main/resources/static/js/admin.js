@@ -1,14 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
     fetchCurrentUser();
     fetchAllUsers();
-    setupCloseButtons();
+
 });
 
 function fetchCurrentUser() {
     fetch('/api/user')
         .then(response => {
             if (!response.ok) {
-                throw new Error('a gde svyazi?? aloo');
+                throw new Error('Не удалось получить пользователя');
             }
             return response.json();
         })
@@ -34,7 +34,7 @@ function fetchAllUsers() {
     fetch('/api/admin/')
         .then(response => {
             if (!response.ok) {
-                throw new Error('a gde svyaz?? aloo');
+                throw new Error('Не удалось получить пользователей');
             }
             return response.json();
         })
@@ -53,8 +53,8 @@ function fetchAllUsers() {
                     <td>${user.email}</td>
                     <td>${user.roles.map(role => role.role.replace('ROLE_', '')).join(', ')}</td>
                     
-                    <td><button class="btn btn-info" onclick="openEditUserPopup(${user.id})">Edit</button></td>
-                    <td><button class="btn btn-danger" onclick="openDeleteUserPopup(${user.id})">Delete</button></td>
+                    <td><button class="btn btn-info text-white" onclick="openEditModel(${user.id})">Edit</button></td>
+                    <td><button class="btn btn-danger" onclick="openDeleteModal(${user.id})">Delete</button></td>
                     `;
 
                 usersTableBody.appendChild(row);
@@ -92,7 +92,7 @@ document.getElementById('addUserForm').addEventListener('submit', function (even
             if (response.ok) {
                 this.reset();
                 fetchAllUsers();
-                window.location.href = '/admin';// Обновляем таблицу пользователей
+                window.location.href = '/admin';
 
             } else {
                 return response.json().then(data => {
@@ -106,53 +106,52 @@ document.getElementById('addUserForm').addEventListener('submit', function (even
         });
 });
 
-function openEditUserPopup(userId) {
-    console.log('Opening edit modal for user ID:', userId);
-    fetch(`api/admin/updateUser/${userId}`)
+                                        // РЕДАКТИРОВАНИЕ ПОЛЬЗОВАТЕЛЯ \\
+
+function openEditModel(userId) {
+    console.log('Открытие модального окна редактирования для пользователя ID:', userId);
+    fetch(`api/admin/${userId}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to fetch user');
+                throw new Error('Не удалось получить пользователя для редактирования');
             }
             return response.json();
         })
         .then(user => {
-            console.log('User fetched for edit:', user);
-            document.getElementById('editUserId').value = user.id;
-            document.getElementById('editUsername').value = user.username;
-            document.getElementById('editSurname').value = user.surname;
-            document.getElementById('editAge').value = user.age;
-            document.getElementById('editEmail').value = user.email;
-            document.getElementById('editPassword').value = user.password;
-            const editRolesSelect = document.getElementById('editRoles');
+            console.log('Пользователь загружен для редактирования:', user);
+            document.getElementById('id').value = user.id;
+            document.getElementById('firstNameEdit').value = user.firstName;
+            document.getElementById('lastNameEdit').value = user.lastName;
+            document.getElementById('ageEdit').value = user.age;
+            document.getElementById('emailEdit').value = user.email;
+
+            const editRolesSelect = document.getElementById('rolesEdit');
             Array.from(editRolesSelect.options).forEach(option => {
                 option.selected = user.roles.some(role => role.id === parseInt(option.value, 10));
             });
+
             openModal('editUserModal');
         })
-        .catch(error => {
-            console.error('Error fetching user:', error);
-        });
+        .catch(error => console.error('Ошибка:', error));
 }
 
-// Обработчик отправки формы редактирования пользователя
 document.getElementById('editUserForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const formData = new FormData(this);
-    const userId = parseInt(formData.get('id'), 10);
-    const rolesSelected = Array.from(document.getElementById('editRoles').selectedOptions).map(option => ({
-        id: parseInt(option.value, 10)
-    }));
+    const userId = document.getElementById('id').value;
     const user = {
-        id: userId, // ID пользователя обязательно
-        username: formData.get('editUsername'),
-        surname: formData.get('editSurname'),
-        age: parseInt(formData.get('editAge'), 10),
-        email: formData.get('editEmail'),
-        password: formData.get('editPassword'),
-        roles: rolesSelected
+        id: userId,
+        firstName: formData.get('firstNameEdit'),
+        lastName: formData.get('lastNameEdit'),
+        age: parseInt(formData.get('ageEdit'), 10),
+        email: formData.get('emailEdit'),
+        password: formData.get('passwordEdit'),
+        roles: Array.from(document.getElementById('rolesEdit').selectedOptions).map(option => ({
+            id: parseInt(option.value, 10)
+        }))
     };
     console.log('Updating user:', user);
-    fetch(`api/admin/updateUser`, { // Исправлен путь
+    fetch(`api/admin/updateUser`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -160,99 +159,82 @@ document.getElementById('editUserForm').addEventListener('submit', function (eve
         body: JSON.stringify(user)
     })
         .then(response => {
-            if (response.ok) {
-                fetchUsers(); // Перезагрузка таблицы
-
-                closeModal('editUserModal');
-
-                window.location.href = 'api/admin';
-            } else {
-                return response.json().then(data => {
-                    console.error('Ошибка обновления:', data);
-                    alert('Ошибка при обновлении пользователя: ' + data.message);
-                });
+            if (!response.ok) {
+                throw new Error('Не удалось обновить пользователя');
             }
+            return response.json();
+        })
+        .then(updatedUser => {
+            console.log('Пользователь успешно обновлен:', updatedUser);
+            fetchAllUsers();
+            fetchCurrentUser();
+            $('#editUserModal').modal('hide');
+            document.body.style.overflow = '';
         })
         .catch(error => {
-            console.error('Error updating user:', error);
+            console.error('Ошибка при обновлении пользователя:', error);
             alert('Ошибка при обновлении пользователя: ' + error.message);
         });
 });
 
 
 
+                                        // УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ \\
 
+function openDeleteModal(userId) {
 
+    console.log('Открытие модального окна удаления пользователя по ID:', userId);
+    fetch(`api/admin/${userId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Не удалось получить пользователя для редактирования');
+            }
+            return response.json();
+        })
+        .then(user => {
+            console.log('Пользователь загружен для редактирования:', user);
+            document.getElementById('idDelete').value = user.id;
+            document.getElementById('firstNameDelete').value = user.firstName;
+            document.getElementById('lastNameDelete').value = user.lastName;
+            document.getElementById('ageDelete').value = user.age;
+            document.getElementById('emailDelete').value = user.email;
 
-// Функция для удаления пользователя
-function openDeleteUserPopup(userId) {
+            openModal('deleteUserModal');
+
+            document.getElementById('confirmDeleteButton').onclick = function () {
+                deleteUser(user.id);
+            };
+        })
+        .catch(error => console.error('Ошибка:', error));
+}
+
+function deleteUser(userId) {
     if (confirm('Вы уверены, что хотите удалить этого пользователя?')) {
-        console.log('Deleting user ID:', userId);
-        fetch(`/admin/users/${userId}`, {
+        fetch(`/api/admin/deleteUser/${userId}`, {
             method: 'DELETE'
         })
             .then(response => {
-                if (response.ok) {
-                    fetchUsers();
-                    alert('Пользователь успешно удалён!');
-                } else {
-                    return response.json().then(data => {
-                        throw new Error(data.message || 'Не удалось удалить пользователя');
-                    });
+                console.log('Ответ от сервера:', response);
+                if (!response.ok) {
+                    throw new Error('Не удалось удалить пользователя');
                 }
+                console.log('Пользователь успешно удален');
+                fetchAllUsers();
+                fetchCurrentUser();
+                $('#deleteUserModal').modal('hide');
             })
-            .catch(error => {
-                console.error('Error deleting user:', error);
-                alert('Ошибка при удалении пользователя: ' + error.message);
-            });
+
     }
 }
 
-// Функция для открытия модального окна
+
+                                            // ОТКРЫТИЕ МОДАЛЬНОГО ОКНА \\
+
 function openModal(modalId) {
     console.log('Opening modal:', modalId);
-    const modal = document.getElementById(modalId);
-    const overlay = document.getElementById('overlay');
-    if (modal && overlay) {
-        modal.style.display = 'block';
-        overlay.style.display = 'block';
-        document.body.style.overflow = 'hidden';
+    const modalElement = document.getElementById(modalId);
+    if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
     }
-}
-
-// Функция для закрытия модального окна
-function closeModal(modalId) {
-    console.log('Closing modal:', modalId);
-    const modal = document.getElementById(modalId);
-    const overlay = document.getElementById('overlay');
-    if (modal && overlay) {
-        modal.style.display = 'none';
-        overlay.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-}
-
-// Функция для установки обработчиков закрытия модальных окон
-function setupCloseButtons() {
-    const closeButtons = document.querySelectorAll('.close-popup');
-    closeButtons.forEach(button => {
-        button.addEventListener('click', function (event) {
-            event.preventDefault();
-            const modalId = this.getAttribute('data-modal');
-            if (modalId) {
-                closeModal(modalId);
-            }
-        });
-    });
-
-    // Закрытие модальных окон при клике на оверлей
-    const overlay = document.getElementById('overlay');
-    overlay.addEventListener('click', function () {
-        const modals = document.querySelectorAll('.popup');
-        modals.forEach(modal => {
-            modal.style.display = 'none';
-        });
-        this.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    });
 }

@@ -44,8 +44,8 @@ public class AdminController {
         return ResponseEntity.ok(user);
     }
 
-    @DeleteMapping(value = "/admin/deleteUser")
-    public String deleteUser(@RequestParam Long id) {
+    @DeleteMapping(value = "/admin/deleteUser/{id}")
+    public String deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return "User with id " + id + " was deleted";
     }
